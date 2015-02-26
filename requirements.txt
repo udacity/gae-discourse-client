@@ -1,0 +1,3 @@
+nose2-gae
+pyyaml
+multidimensional_urlencode
