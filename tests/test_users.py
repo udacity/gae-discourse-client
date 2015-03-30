@@ -5,7 +5,7 @@ from google.appengine.api import urlfetch_stub
 from google.appengine.ext import ndb
 
 from gae_discourse_client import discourse_client
-from tests.unit_tests import base
+import base
 
 
 class DiscourseUserUnitTestCase(base.TestCase):

@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 
 from multidimensional_urlencode import urlencode
@@ -19,8 +20,8 @@ class DiscourseGroupTestCase(unittest.TestCase):
             'urlfetch', urlfetch_stub.URLFetchServiceStub())
 
         discourse_client.initClient(
-            'http://localhost:4000/',
-            '26ec02d02e4c2ab78ba10ca648bcadb7035a008a25120e6a6363c08ebbfeee8b',
+            os.environ['DISCOURSE_URL'],
+            os.environ['DISCOURSE_API_KEY'],
             'system'
         )
 
