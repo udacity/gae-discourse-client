@@ -20,6 +20,17 @@ class CategoryClient(object):
 
     @ndb.tasklet
     def getByName(self, category_name, parent_category_name=None):
+        """Finds a Discourse category by name.
+
+        Args:
+          category_name: The name of the category to find.
+          parent_category_name: The name of the parent category (if any). If this is None, a
+            top-level category will returned.
+
+        Returns:
+          A dictionary containing information about the category if the category is successfully found,
+          None otherwise
+        """
         if parent_category_name:
             parent_category = yield self.getByName(parent_category_name)
             if not parent_category:
@@ -37,7 +48,24 @@ class CategoryClient(object):
 
     @ndb.tasklet
     def create(self, category_name, parent_category_name=None, strict=False, **kwargs):
-        """Create a category"""
+        """Creates a category on Discourse.
+
+        Args:
+          category_name: Name of the category to create.
+          parent_category_name: Name of the parent category. If this is None, a top-level category
+            is created.
+          strict: Whether to enforce that a category is actually created. If this is False and the
+            category already exists, this is a no-op.
+          kwargs: Any additional keyword arguments to pass to the categories endpoint.
+
+        Returns:
+          A dictionary object with key 'success' set to True if the category was successfully
+            created. If the category already exists and `strict` is False, returns None.
+
+        Raises:
+          Error: if `strict` is True and the category already exists, or if the parent category
+            given does not exist.
+        """
         category = yield self.getByName(category_name, parent_category_name)
         if category:
             if not strict:
@@ -66,6 +94,22 @@ class CategoryClient(object):
 
     @ndb.tasklet
     def delete(self, category_name, parent_category_name=None, strict=False):
+        """Delete a category.
+
+        Args:
+          category_name: Name of the category to delete.
+          parent_category_name: Name of the parent category of the category to be deleted. If this
+            is None, a top-level category will be deleted.
+          strict: Whether to enforce that a category is actually deleted. If this is False and the
+            category does not exist, this is a no-op.
+
+        Returns:
+          A dictionary object with key 'success' set to True if the category was successfully
+            deleted. If the category does not exist and `strict` is False, returns None.
+
+        Raises:
+          Error: if `strict` is True and the category already exists.
+        """
         category = yield self.getByName(category_name, parent_category_name)
         if not category:
             if not strict:

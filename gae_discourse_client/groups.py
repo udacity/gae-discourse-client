@@ -2,7 +2,6 @@
 
 import json
 import re
-from urllib import urlencode
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -21,7 +20,19 @@ class GroupClient(object):
 
     @ndb.tasklet
     def addUser(self, user_email, group_name):
-        """Adds the given account to the Discourse group with the given name"""
+        """Adds the given account to the Discourse group with the given name
+
+        Args:
+          user_email: Email address of the user to add.
+          group_name: Name of the group to which we want to add the user.
+
+        Returns:
+          A dictionary object with the key 'success' set to True if the user was successfully
+          added.
+
+        Raises:
+          Error: If the user or group was not found.
+        """
 
         user = yield self._user_client.getByEmail(user_email)
         if not user:
@@ -42,7 +53,19 @@ class GroupClient(object):
 
     @ndb.tasklet
     def removeUser(self, user_email, group_name):
-        """Removes an account from a group"""
+        """Removes an account from a group
+
+        Args:
+          user_email: Email address of the user to remove.
+          group_name: Name of the group from which we want to remove the user.
+
+        Returns:
+          A dictionary object with the key 'success' set to True if the user was successfully
+          removed, False otherwise.
+
+        Raises:
+          Error: If the user or group was not found.
+        """
 
         user = yield self._user_client.getByEmail(user_email)
         if not user:
@@ -60,7 +83,21 @@ class GroupClient(object):
 
     @ndb.tasklet
     def create(self, group_name, strict=False, **kwargs):
-        """Creates a group with the given name on Discourse"""
+        """Creates a group with the given name on Discourse.
+
+        Args:
+          group_name: Name of the group to create.
+          strict: Whether to enforce that a group is actually created. If this is False and the
+            group already exists, this is a no-op.
+          kwargs: Any additional keyword arguments to pass to the admin/groups endpoint.
+
+        Returns:
+          A dictionary object with key 'success' set to True if the group was successfully
+            created. If the group already exists and `strict` is False, returns None.
+
+        Raises:
+          Error: if `strict` is True and the group already exists.
+        """
 
         group = yield self.getByName(group_name)
         if group:
@@ -81,6 +118,20 @@ class GroupClient(object):
 
     @ndb.tasklet
     def delete(self, group_name, strict=False):
+        """Delete a group.
+
+        Args:
+          group_name: Name of the group to delete.
+          strict: Whether to enforce that a group is actually deleted. If this is False and the
+            group does not exist, this is a no-op.
+
+        Returns:
+          A dictionary object with key 'success' set to True if the group was successfully
+            deleted. If the group does not exist and `strict` is False, returns None.
+
+        Raises:
+          Error: if `strict` is True and the group already exists.
+        """
         group = yield self.getByName(group_name)
         if not group:
             if not strict:
@@ -93,6 +144,15 @@ class GroupClient(object):
 
     @ndb.tasklet
     def getByName(self, group_name):
+        """Finds the Discourse group with the given name.
+
+        Args:
+          group_name: The name of the group to find.
+
+        Returns:
+          A dictionary containing information about the group if the group is successfully found,
+          None otherwise
+        """
         groups = yield self._api_client.getRequest('admin/groups.json')
 
         for group in groups:

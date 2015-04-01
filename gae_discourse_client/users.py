@@ -22,7 +22,15 @@ class UserClient(object):
 
     @ndb.tasklet
     def getByEmail(self, user_email):
-        """Finds the Discourse user with the given email"""
+        """Finds the Discourse user with the given email.
+
+        Args:
+          user_email: The email address of the user to find.
+
+        Returns:
+          A dictionary containing information about the user if the user is successfully found,
+          None otherwise
+        """
         users = yield self._api_client.getRequest(
             'admin/users/list/active.json',
             params={'filter': user_email, 'show_emails': 'true'}
@@ -36,10 +44,21 @@ class UserClient(object):
 
     @ndb.tasklet
     def create(self, name, email, password, username, external_id=None):
-        """Create a Discourse account
+        """Create a Discourse account.
 
-        This method takes user account info and returns the Discourse API response
-        containing the user information for that user.
+        Args:
+          name: Full name of the user.
+          email: Email address of the user. This must be distinct from any other registered users
+            on the site.
+          password: Password of the user.
+          username: Discourse username of the user. Must also be distinct from any other
+            registered users.
+          external_id: External ID for single sign-on, if it exists. This must be unique to your
+            application (for more information on single sign-on, see
+            https://meta.discourse.org/t/official-single-sign-on-for-discourse/13045).
+
+        Returns:
+          A dictionary with the key 'success' set to True or False, depending on the outcome.
         """
 
         payload = {
@@ -58,6 +77,20 @@ class UserClient(object):
 
     @ndb.tasklet
     def delete(self, email, strict=False):
+        """Delete a Discourse account.
+
+        Args:
+          email: Email address of the user to be deleted.
+          strict: Whether to ensure that a user was actually deleted. If False, and the user does
+            not exist, an error will be raised.
+
+        Returns:
+          A dictionary with the key 'deleted' set to True if the user is deleted, or None if the
+            user does not exist and `strict` is False.
+
+        Raises:
+          Error: If `strict` is True and the user does not exist.
+        """
         user = yield self.getByEmail(email)
         if user is None:
             if not strict:

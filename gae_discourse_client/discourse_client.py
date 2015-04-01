@@ -2,7 +2,7 @@
 
 import json
 import re
-from urllib import urlencode
+import urllib
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -69,10 +69,10 @@ class DiscourseAPIClient(object):
         url = self._discourse_url + req_string
 
         if params:
-            url += '?' + urlencode(params)
+            url += '?' + urllib.urlencode(params)
 
         response = yield ndb.get_context().urlfetch(
-            url=url, payload=urlencode(payload), method=method,
+            url=url, payload=urllib.urlencode(payload), method=method,
             headers={'Content-Type': 'application/x-www-form-urlencoded'}
         )
 
