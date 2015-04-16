@@ -10,7 +10,7 @@ class FunctionalTests(setuptools.Command):
     ]
 
     def run(self):
-        os.system("nose2 -s functional_tests")
+        os.system("nose2 -s functional_tests -t '.'")
 
     def initialize_options(self):
         self.url = None
