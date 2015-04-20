@@ -15,22 +15,34 @@ class ContentClient(object):
         self._category_client = category_client
 
     @ndb.tasklet
-    def get(self, category_slug=None, parent_category_slug=None):
+    def get(self, category_id=None, page=0):
         """Gets all posts for the given category.
 
         Args:
-          category_slug: Slug for the category from which to retrieve posts, if any.
-          parent_category_slug: Slug for the parent category, if any. If this is None, a toplevel
-            category will be used.
+          category_id: ID for the category from which to retrieve posts, if any.
+          page: Page from which to retrieve results. Each page will return 30 posts.
 
         Returns:
-          A list of Python objects representing Discourse posts.
+          A list of Python objects representing Discourse topics.
         """
 
-        category = yield self._category_client.getBySlug(category_slug, parent_category_slug)
-        if not category:
-            raise Error('Unable to find category with slug %s, parent slug %s'
-                        % (category_slug, parent_category_slug))
-
-        response = yield self._api_client.getRequest('c/%s.json' % category['id'])
+        if category_id:
+            response = yield self._api_client.getRequest('c/%s.json' % category_id, params={'page': page})
+        else:
+            response = yield self._api_client.getRequest('latest.json', params={'page': page})
+        
         raise ndb.Return(response['topic_list']['topics'])
+
+    @ndb.tasklet
+    def getTopic(self, topic_id):
+        """Get the topic with the given ID
+
+        Args:
+          topic_id: ID for the topic to retrieve.
+
+        Returns:
+          A list of Python objects representing the posts in the topic.
+        """
+
+        response = yield self._api_client.getRequest('t/%s.json' % topic_id)
+        raise ndb.Return(response['post_stream']['posts'])

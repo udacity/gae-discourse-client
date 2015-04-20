@@ -26,13 +26,6 @@ class DiscourseContentUnitTestCase(base.TestCase):
     def testGetPosts(self):
         response = self.mock()
         response.status_code = 200
-        response.content = json.dumps({'category_list': {'categories': [
-            {'id': 17, 'slug': 'questions'}
-        ]}})
-        self._expectUrlfetch(url='http://rants.example.com/categories.json', method='GET', payload='', response=response)
-
-        response = self.mock()
-        response.status_code = 200
         response.content = json.dumps({'topic_list': {'topics': [
             {
                 'id': 1,
@@ -49,4 +42,4 @@ class DiscourseContentUnitTestCase(base.TestCase):
         ]}})
         self._expectUrlfetch(url='http://rants.example.com/c/17.json', method='GET', payload='', response=response)
 
-        discourse_client.content.get(category_slug='questions').get_result()
+        discourse_client.content.get(category_id=17).get_result()

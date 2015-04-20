@@ -24,6 +24,11 @@ class DiscourseContentTestCase(unittest.TestCase):
         )
 
     def testGetStaffPosts(self):
-        response = discourse_client.content.get('staff').get_result()
-
+        response = discourse_client.content.get(15).get_result() # Staff category
         self.assertEqual(4, len(response))
+
+        for topic in response:
+            response = discourse_client.content.getTopic(topic['id']).get_result()
+            self.assertTrue(0 < len(response))
+            for post in response:
+                self.assertTrue('cooked' in post)
