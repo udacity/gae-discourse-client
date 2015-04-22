@@ -10,7 +10,7 @@ class FunctionalTests(setuptools.Command):
     ]
 
     def run(self):
-        os.system("nose2 -s functional_tests -t '.'")
+        os.system("nose2 -s functional_tests -t %s" % os.path.dirname(os.path.abspath(__file__)))
 
     def initialize_options(self):
         self.url = None

@@ -42,4 +42,4 @@ class DiscourseContentUnitTestCase(base.TestCase):
         ]}})
         self._expectUrlfetch(url='http://rants.example.com/c/17.json', method='GET', payload='', response=response)
 
-        discourse_client.content.get(category_id=17).get_result()
+        discourse_client.content.getTopics(category_id=17).get_result()
