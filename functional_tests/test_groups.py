@@ -2,8 +2,6 @@ import json
 import os
 import unittest
 
-from multidimensional_urlencode import urlencode
-
 from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import urlfetch_stub
 from google.appengine.ext import testbed

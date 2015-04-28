@@ -8,6 +8,7 @@ from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
 import categories as categories_module
+import content as content_module
 import groups as groups_module
 import users as users_module
 
@@ -88,13 +89,15 @@ class DiscourseAPIClient(object):
 users = None
 groups = None
 categories = None
+content = None
 
 
 def initClient(discourse_url, api_key, api_username):
     _api_client = DiscourseAPIClient(discourse_url, api_key, api_username)
 
-    global users, groups, categories
+    global categories, content, groups, users
 
     users = users_module.UserClient(_api_client)
     groups = groups_module.GroupClient(_api_client, users)
     categories = categories_module.CategoryClient(_api_client)
+    content = content_module.ContentClient(_api_client, categories)

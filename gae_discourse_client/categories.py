@@ -47,6 +47,34 @@ class CategoryClient(object):
         raise ndb.Return(None)
 
     @ndb.tasklet
+    def getBySlug(self, category_slug, parent_category_slug=None):
+        """Finds a Discourse category by slug.
+
+        Args:
+          category_slug: The slug of the category to find.
+          parent_category_slug: The slug of the parent category (if any). If this is None, a
+            top-level category will returned.
+
+        Returns:
+          A dictionary containing information about the category if the category is successfully found,
+          None otherwise
+        """
+        if parent_category_slug:
+            parent_category = yield self.getBySlug(parent_category_slug)
+            if not parent_category:
+                raise ndb.Return(None)
+
+            categories = yield self._api_client.getRequest('categories.json', params={'parent_category_id': parent_category['id']})
+        else:
+            categories = yield self._api_client.getRequest('categories.json')
+
+        for category in categories['category_list']['categories']:
+            if category['slug'] == category_slug:
+                raise ndb.Return(category)
+
+        raise ndb.Return(None)
+
+    @ndb.tasklet
     def create(self, category_name, parent_category_name=None, strict=False, **kwargs):
         """Creates a category on Discourse.
 
