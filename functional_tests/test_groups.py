@@ -40,7 +40,7 @@ class DiscourseGroupTestCase(unittest.TestCase):
 
         self.assertTrue(response['basic_group'] is not None)
 
-    def testAddUserToGroup(self):
+    def testAddUserToGroupByEmail(self):
         discourse_client.groups.create(
             group_name='quarterbacks'
         ).get_result()
@@ -52,14 +52,14 @@ class DiscourseGroupTestCase(unittest.TestCase):
             username='peyton18'
         ).get_result()
 
-        response = discourse_client.groups.addUser(
+        response = discourse_client.groups.addUserByEmail(
             user_email='peyton@example.com',
             group_name='quarterbacks'
         ).get_result()
 
         self.assertEqual('OK', response['success'])
 
-    def testRemoveUserFromGroup(self):
+    def testRemoveUserFromGroupByEmail(self):
         discourse_client.groups.create(
             group_name='quarterbacks'
         ).get_result()
@@ -71,12 +71,12 @@ class DiscourseGroupTestCase(unittest.TestCase):
             username='peyton18'
         ).get_result()
 
-        discourse_client.groups.addUser(
+        discourse_client.groups.addUserByEmail(
             user_email='peyton@example.com',
             group_name='quarterbacks'
         ).get_result()
 
-        response = discourse_client.groups.removeUser(
+        response = discourse_client.groups.removeUserByEmail(
             user_email='peyton@example.com',
             group_name='quarterbacks'
         ).get_result()

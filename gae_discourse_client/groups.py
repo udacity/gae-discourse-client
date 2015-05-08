@@ -19,7 +19,7 @@ class GroupClient(object):
         self._user_client = user_client
 
     @ndb.tasklet
-    def addUser(self, user_email, group_name):
+    def addUserByEmail(self, user_email, group_name):
         """Adds the given account to the Discourse group with the given name
 
         Args:
@@ -52,7 +52,7 @@ class GroupClient(object):
         raise ndb.Return(result)
 
     @ndb.tasklet
-    def removeUser(self, user_email, group_name):
+    def removeUserByEmail(self, user_email, group_name):
         """Removes an account from a group
 
         Args:
