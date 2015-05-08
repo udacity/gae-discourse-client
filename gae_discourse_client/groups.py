@@ -20,7 +20,10 @@ class GroupClient(object):
 
     @ndb.tasklet
     def addUserByEmail(self, user_email, group_name):
-        """Adds the given account to the Discourse group with the given name
+        """Adds the given account to the Discourse group with the given name.
+
+        Note that this is significantly slower than addUserByUsername, since users in Discourse
+        are indexed by username and not by email.
 
         Args:
           user_email: Email address of the user to add.
@@ -38,12 +41,31 @@ class GroupClient(object):
         if not user:
             raise Error("Unable to find user with email %s" % user_email)
 
+        result = yield self.addUserByUsername(user['username'], group_name)
+        raise ndb.Return(result)
+
+    @ndb.tasklet
+    def addUserByUsername(self, username, group_name):
+        """Adds the given account to the Discourse group with the given name
+
+        Args:
+          username: Username of the user to add.
+          group_name: Name of the group to which we want to add the user.
+
+        Returns:
+          A dictionary object with the key 'success' set to True if the user was successfully
+          added.
+
+        Raises:
+          Error: If the user or group was not found.
+        """
+
         group = yield self.getByName(group_name)
         if not group:
             raise Error("Group named %s not found" % group_name)
 
         payload = {
-            'usernames': user['username']
+            'usernames': username
         }
 
         result = yield self._api_client.putRequest(
@@ -54,6 +76,9 @@ class GroupClient(object):
     @ndb.tasklet
     def removeUserByEmail(self, user_email, group_name):
         """Removes an account from a group
+
+        Note that this is significantly slower than removeUserByUsername, since users in Discourse
+        are indexed by username and not by email.
 
         Args:
           user_email: Email address of the user to remove.
@@ -71,13 +96,55 @@ class GroupClient(object):
         if not user:
             raise Error("Unable to find user with email %s" % user_email)
 
+        result = yield self.removeUserById(user['id'], group_name)
+        raise ndb.Return(result)
+
+    @ndb.tasklet
+    def removeUserByUsername(self, username, group_name):
+        """Removes the given account from the Discourse group with the given name
+
+        Args:
+          username: Username of the user to remove.
+          group_name: Name of the group from which we want to remove the user.
+
+        Returns:
+          A dictionary object with the key 'success' set to True if the user was successfully
+          added.
+
+        Raises:
+          Error: If the user or group was not found.
+        """
+
+        user = yield self._user_client.getByUsername(username)
+        if not user:
+            raise Error("Unable to find user with username %s" % username)
+
+        result = yield self.removeUserById(user['id'], group_name)
+        raise ndb.Return(result)
+
+    @ndb.tasklet
+    def removeUserById(self, user_id, group_name):
+        """Removes the given account from the Discourse group with the given name
+
+        Args:
+          username: Username of the user to remove.
+          group_name: Name of the group from which we want to remove the user.
+
+        Returns:
+          A dictionary object with the key 'success' set to True if the user was successfully
+          added.
+
+        Raises:
+          Error: If the user or group was not found.
+        """
+
         group = yield self.getByName(group_name)
         if not group:
             raise Error("Group named %s not found" % group_name)
 
         result = yield self._api_client.deleteRequest(
             'admin/groups/%s/members.json' % group['id'],
-            params={'user_id': user['id']}
+            params={'user_id': user_id}
         )
         raise ndb.Return(result)
 

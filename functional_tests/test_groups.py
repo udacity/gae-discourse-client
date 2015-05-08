@@ -71,13 +71,56 @@ class DiscourseGroupTestCase(unittest.TestCase):
             username='peyton18'
         ).get_result()
 
-        discourse_client.groups.addUserByEmail(
-            user_email='peyton@example.com',
+        discourse_client.groups.addUserByUsername(
+            username='peyton18',
             group_name='quarterbacks'
         ).get_result()
 
         response = discourse_client.groups.removeUserByEmail(
             user_email='peyton@example.com',
+            group_name='quarterbacks'
+        ).get_result()
+
+        self.assertEqual('OK', response['success'])
+
+    def testAddUserToGroupByUsername(self):
+        discourse_client.groups.create(
+            group_name='quarterbacks'
+        ).get_result()
+
+        discourse_client.users.create(
+            name='John Elway',
+            email='john@example.com',
+            password='go card',
+            username='jelway7'
+        ).get_result()
+
+        response = discourse_client.groups.addUserByUsername(
+            username='jelway7',
+            group_name='quarterbacks'
+        ).get_result()
+
+        self.assertEqual('OK', response['success'])
+
+    def testRemoveUserFromGroupByUsername(self):
+        discourse_client.groups.create(
+            group_name='quarterbacks'
+        ).get_result()
+
+        discourse_client.users.create(
+            name='Peyton Manning',
+            email='peyton@example.com',
+            password='omaha, omaha',
+            username='peyton18'
+        ).get_result()
+
+        discourse_client.groups.addUserByUsername(
+            username='peyton18',
+            group_name='quarterbacks'
+        ).get_result()
+
+        response = discourse_client.groups.removeUserByUsername(
+            username='peyton18',
             group_name='quarterbacks'
         ).get_result()
 

@@ -71,6 +71,20 @@ class DiscourseUserUnitTestCase(base.TestCase):
 
         discourse_client.groups.addUserByEmail('peyton18@example.com', 'quarterbacks').get_result()
 
+    def testAddUserToGroupByUsername(self):
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps([{'name': 'quarterbacks', 'id': 32}])
+        self._expectUrlfetch(url='http://rants.example.com/admin/groups.json', method='GET', payload='', response=response)
+
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps({'success': True})
+        payload = urlencode({'usernames': 'peyton18'})
+        self._expectUrlfetch(url='http://rants.example.com/admin/groups/32/members.json', method='PUT', payload=payload, response=response)
+
+        discourse_client.groups.addUserByUsername('peyton18', 'quarterbacks').get_result()
+
     def testAddUserFailsWhenUserNotFound(self):
         response = self.mock()
         response.status_code = 404
@@ -111,3 +125,21 @@ class DiscourseUserUnitTestCase(base.TestCase):
         self._expectUrlfetch(url='http://rants.example.com/admin/groups/32/members.json?user_id=18', method='DELETE', payload='', response=response)
 
         discourse_client.groups.removeUserByEmail('peyton18@example.com', 'quarterbacks').get_result()
+
+    def testRemoveUserFromGroupByUsername(self):
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps({'user': {'email': 'peyton18@example.com', 'id': 18, 'username': 'peyton18'}})
+        self._expectUrlfetch(url='http://rants.example.com/users/peyton18.json', method='GET', payload='', response=response)
+
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps([{'name': 'quarterbacks', 'id': 32}])
+        self._expectUrlfetch(url='http://rants.example.com/admin/groups.json', method='GET', payload='', response=response)
+
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps({'success': True})
+        self._expectUrlfetch(url='http://rants.example.com/admin/groups/32/members.json?user_id=18', method='DELETE', payload='', response=response)
+
+        discourse_client.groups.removeUserByUsername('peyton18', 'quarterbacks').get_result()
