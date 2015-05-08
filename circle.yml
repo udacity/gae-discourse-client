@@ -1,8 +1,8 @@
 ## Customize dependencies
 dependencies:
   pre:
-    - curl -o $HOME/google_appengine_1.9.18.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.18.zip
-    - unzip -q -d $HOME $HOME/google_appengine_1.9.18.zip
+    - curl -o $HOME/google_appengine_1.9.19.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.19.zip
+    - unzip -q -d $HOME $HOME/google_appengine_1.9.19.zip
 
 machine:
   environment:
