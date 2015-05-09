@@ -32,11 +32,11 @@ class UserClient(object):
           None otherwise.
         """
         user = yield self._api_client.getRequest(
-            'users/%s.json' % username
+            'admin/users/%s.json' % username
         )
 
         if user:
-            raise ndb.Return(user['user'])
+            raise ndb.Return(user)
         else:
             raise ndb.Return(None)
 

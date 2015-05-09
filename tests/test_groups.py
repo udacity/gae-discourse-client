@@ -129,8 +129,8 @@ class DiscourseUserUnitTestCase(base.TestCase):
     def testRemoveUserFromGroupByUsername(self):
         response = self.mock()
         response.status_code = 200
-        response.content = json.dumps({'user': {'email': 'peyton18@example.com', 'id': 18, 'username': 'peyton18'}})
-        self._expectUrlfetch(url='http://rants.example.com/users/peyton18.json', method='GET', payload='', response=response)
+        response.content = json.dumps({'email': 'peyton18@example.com', 'id': 18, 'username': 'peyton18'})
+        self._expectUrlfetch(url='http://rants.example.com/admin/users/peyton18.json', method='GET', payload='', response=response)
 
         response = self.mock()
         response.status_code = 200
