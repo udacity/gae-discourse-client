@@ -21,8 +21,31 @@ class UserClient(object):
     # USER ACTIONS
 
     @ndb.tasklet
+    def getByUsername(self, username):
+        """Finds the Discourse user with the given username.
+
+        Args:
+          username: The username of the user to find.
+
+        Returns:
+          A dictionary containing information about the user if the user is successfully found,
+          None otherwise.
+        """
+        user = yield self._api_client.getRequest(
+            'users/%s.json' % username
+        )
+
+        if user:
+            raise ndb.Return(user['user'])
+        else:
+            raise ndb.Return(None)
+
+    @ndb.tasklet
     def getByEmail(self, user_email):
         """Finds the Discourse user with the given email.
+
+        Note that this is significantly slower than getByUsername, since Discourse users are
+        indexed on username but not on email.
 
         Args:
           user_email: The email address of the user to find.
