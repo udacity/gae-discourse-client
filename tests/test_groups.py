@@ -143,3 +143,31 @@ class DiscourseUserUnitTestCase(base.TestCase):
         self._expectUrlfetch(url='http://rants.example.com/admin/groups/32/members.json?user_id=18', method='DELETE', payload='', response=response)
 
         discourse_client.groups.removeUserByUsername('peyton18', 'quarterbacks').get_result()
+
+    def testGetMembersReturnsGroupMembers(self):
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps({
+            'members': [{
+                'id': 18,
+                'username': 'peyton18',
+                'name': 'Peyton Manning'
+            }, {
+                'id': 12,
+                'username': 'treebeard',
+                'name': 'Andrew Luck'
+            }],
+            'meta': {
+                'total': 2,
+                'limit': 50,
+                'offset': 0
+            }
+        })
+        self._expectUrlfetch(
+            url='http://rants.example.com/groups/quarterbacks/members.json', method='GET',
+            payload='', response=response)
+
+        response = discourse_client.groups.getMembers('quarterbacks').get_result()
+        self.assertEqual(2, len(response['members']))
+        self.assertEqual(2, response['meta']['total'])
+        self.assertTrue(any(member['name'] == 'Andrew Luck' for member in response['members']))

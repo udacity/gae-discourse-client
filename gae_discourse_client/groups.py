@@ -227,3 +227,20 @@ class GroupClient(object):
                 raise ndb.Return(group)
 
         raise ndb.Return(None)
+
+    @ndb.tasklet
+    def getMembers(self, group_name, limit=50, offset=0):
+        """Finds and returns the members of the given Discourse group.
+
+        Args:
+          group_name: The name of the group from which to retrieve members.
+
+        Returns:
+          An object containing a list of members in the group, and a "meta" object with the total
+          number of members in the group, the limit, and the offset.
+        """
+        response = yield self._api_client.getRequest(
+            'groups/%s/members.json' % group_name,
+            params={'limit': limit, 'offset': offset}
+        )
+        raise ndb.Return(response)
