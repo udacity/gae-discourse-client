@@ -125,3 +125,48 @@ class DiscourseGroupTestCase(unittest.TestCase):
         ).get_result()
 
         self.assertEqual('OK', response['success'])
+
+    def testListGroupMembers(self):
+        # delete the group if it exists
+        try:
+            response = discourse_client.groups.delete('coaches').get_result()
+        except:
+            pass
+
+        discourse_client.groups.create(
+            group_name='coaches'
+        ).get_result()
+
+        discourse_client.users.create(
+            name='Mike Shanahan',
+            email='shanahan@broncos.com',
+            password='elwayelway97',
+            username='shanahan'
+        ).get_result()
+
+        discourse_client.users.create(
+            name='Mike Tomlin',
+            email='tomlin@steelers.com',
+            password='steelcity7',
+            username='miket'
+        ).get_result()
+
+        discourse_client.groups.addUserByUsername(
+            username='shanahan',
+            group_name='coaches'
+        ).get_result()
+
+        discourse_client.groups.addUserByUsername(
+            username='miket',
+            group_name='coaches'
+        ).get_result()
+
+        response = discourse_client.groups.getMembers(
+            group_name='coaches'
+        ).get_result()
+
+        self.assertEqual(2, response['meta']['total'])
+        self.assertEqual(
+            {'shanahan', 'miket'},
+            set(member['username'] for member in response['members'])
+        )
