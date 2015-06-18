@@ -47,3 +47,17 @@ class ContentClient(object):
 
         response = yield self._api_client.getRequest('t/%s.json' % topic_id)
         raise ndb.Return(response)
+
+    @ndb.tasklet
+    def getTopicLast(self, topic_id):
+        """Get the last post in the topic with the given ID
+
+        Args:
+          topic_id: ID for the topic to retrieve.
+
+        Returns:
+          Python object representation of the post.
+        """
+
+        response = yield self._api_client.getRequest('t/%s/last.json' % topic_id)
+        raise ndb.Return(response)
