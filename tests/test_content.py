@@ -43,3 +43,15 @@ class DiscourseContentUnitTestCase(base.TestCase):
         self._expectUrlfetch(url='http://rants.example.com/c/17.json', method='GET', payload='', response=response)
 
         discourse_client.content.getTopics(category_id=17).get_result()
+
+    def testGetLastPost(self):
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps({
+            'id': 1,
+            'post_number': 1,
+            'cooked': '<p>Buddy the Elf, whats your favorite color?</p>'
+        })
+        self._expectUrlfetch(url='http://rants.example.com/t/13/last.json', method='GET', payload='', response=response)
+
+        discourse_client.content.getTopicLast(topic_id=13).get_result()
