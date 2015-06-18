@@ -29,6 +29,9 @@ class DiscourseContentTestCase(unittest.TestCase):
 
         for topic in response['topic_list']['topics']:
             response = discourse_client.content.getTopic(topic['id']).get_result()
+            last = discourse_client.content.getTopicLast(topic['id']).get_result()
+
             self.assertTrue(0 < len(response['post_stream']['posts']))
+            self.assertEqual(response['highest_post_number'], last['post_stream']['posts'][-1]['post_number'])
             for post in response['post_stream']['posts']:
                 self.assertTrue('cooked' in post)
