@@ -40,6 +40,13 @@ against a test instance of Discourse. Before running tests, `requirements.txt` m
 python setup.py test
 ```
 
+If you see import errors related to Google App Engine, you may need to add the Google App Engine
+SDK to your Python path:
+
+```
+export PYTHONPATH="${PYTHONPATH}:/usr/local/google_appengine"
+```
+
 To run the functional tests, you must first have a running instance of Discourse. The easiest way
 to do this is to set it up locally using
 [this guide](https://github.com/discourse/discourse/blob/master/docs/VAGRANT.md). Once that's
