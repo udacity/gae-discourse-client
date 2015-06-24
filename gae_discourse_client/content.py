@@ -15,7 +15,7 @@ class ContentClient(object):
         self._category_client = category_client
 
     @ndb.tasklet
-    def getTopics(self, category_id=None, page=0):
+    def getTopics(self, category_id=None, parent_category_id=None, page=0):
         """Gets all topics for the given category.
 
         Args:
@@ -27,8 +27,12 @@ class ContentClient(object):
           users and a list of topics.
         """
 
-        if category_id:
-            response = yield self._api_client.getRequest('c/%s.json' % category_id, params={'page': page})
+        if category_id and parent_category_id:
+            response = yield self._api_client.getRequest(
+                'c/%s/%s.json' % (parent_category_id, category_id), params={'page': page})
+        elif category_id:
+            response = yield self._api_client.getRequest(
+                'c/%s.json' % category_id, params={'page': page})
         else:
             response = yield self._api_client.getRequest('latest.json', params={'page': page})
 
