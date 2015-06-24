@@ -44,6 +44,27 @@ class DiscourseContentUnitTestCase(base.TestCase):
 
         discourse_client.content.getTopics(category_id=17).get_result()
 
+    def testGetSubcategoryPosts(self):
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps({'topic_list': {'topics': [
+            {
+                'id': 1,
+                'title': 'Who is the greatest band of all time?',
+                'slug': 'who-is-greatest-band',
+                'excerpt': 'The Beatles, obviously'
+            },
+            {
+                'id': 2,
+                'title': 'How does Randy Moss access his memory?',
+                'slug': 'randy-moss-memory',
+                'excerpt': 'Straight Cache, Homey'
+            }
+        ]}})
+        self._expectUrlfetch(url='http://rants.example.com/c/23/17.json', method='GET', payload='', response=response)
+
+        discourse_client.content.getTopics(category_id=17, parent_category_id=23).get_result()
+
     def testGetLastPost(self):
         response = self.mock()
         response.status_code = 200
