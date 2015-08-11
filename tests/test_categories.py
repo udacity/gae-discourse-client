@@ -112,3 +112,18 @@ class DiscourseUserUnitTestCase(base.TestCase):
             discourse_client.categories.create(
                 category_name='Football Players'
             ).get_result()
+
+    def testGetAllCategories(self):
+        response = self.mock()
+        response.status_code = 200
+        response.content = json.dumps(
+            {'categories': [
+                {'name': 'Football Players', 'id': 55, 'slug': 'football-players'},
+                {'name': 'Baseball Players', 'id': 28, 'slug': 'baseball-players'}
+            ]}
+        )
+        self._expectUrlfetch(url='http://rants.example.com/site.json', method='GET', payload='', response=response)
+
+        result = discourse_client.categories.getAllCategories().get_result()
+        self.assertEqual({'football-players', 'baseball-players'}, {category['slug'] for category in result})
+        self.assertTrue(len(result) == 2)

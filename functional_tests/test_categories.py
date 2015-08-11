@@ -52,3 +52,25 @@ class DiscourseCategoryTestCase(unittest.TestCase):
         response = discourse_client.categories.getByName('Broncos').get_result()
 
         self.assertEqual('Broncos', response['name'])
+
+    def testGetAllCategories(self):
+        discourse_client.categories.create(
+            category_name='Broncos',
+            slug='broncos'
+        )
+
+        discourse_client.categories.create(
+            category_name='SF Giants',
+            slug='sfgiants'
+        )
+
+        discourse_client.categories.create(
+            category_name='SJ Sharks',
+            slug='sjsharks'
+        )
+
+        response = discourse_client.categories.getAllCategories().get_result()
+
+        self.assertTrue(any(category['slug'] == 'broncos' for category in response))
+        self.assertTrue(any(category['slug'] == 'sfgiants' for category in response))
+        self.assertTrue(any(category['slug'] == 'sjsharks' for category in response))
