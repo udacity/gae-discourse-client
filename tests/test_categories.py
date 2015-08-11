@@ -125,6 +125,5 @@ class DiscourseUserUnitTestCase(base.TestCase):
         self._expectUrlfetch(url='http://rants.example.com/site.json', method='GET', payload='', response=response)
 
         result = discourse_client.categories.getAllCategories().get_result()
-        self.assertTrue(any(category['slug'] == 'football-players' for category in result))
-        self.assertTrue(any(category['slug'] == 'baseball-players' for category in result))
+        self.assertEqual({'football-players', 'baseball-players'}, {category['slug'] for category in result})
         self.assertTrue(len(result) == 2)
