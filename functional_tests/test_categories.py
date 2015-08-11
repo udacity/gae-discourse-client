@@ -52,3 +52,13 @@ class DiscourseCategoryTestCase(unittest.TestCase):
         response = discourse_client.categories.getByName('Broncos').get_result()
 
         self.assertEqual('Broncos', response['name'])
+
+    def testGetAllCategories(self):
+        discourse_client.categories.create(
+            category_name='Broncos',
+            slug='broncos'
+        )
+
+        response = discourse_client.categories.getAllCategories().get_result()
+
+        self.assertEqual('broncos', response[-1]['slug'])

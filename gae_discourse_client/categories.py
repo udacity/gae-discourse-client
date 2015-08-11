@@ -19,6 +19,16 @@ class CategoryClient(object):
         self._api_client = api_client
 
     @ndb.tasklet
+    def getAllCategories(self):
+        """Gets a list of all Discourse categories and subcategories
+
+        Returns:
+          A list of categories
+        """
+        response = yield self._api_client.getRequest('site.json')
+        raise ndb.Return(response['categories'])
+
+    @ndb.tasklet
     def getByName(self, category_name, parent_category_name=None):
         """Finds a Discourse category by name.
 
